@@ -1,85 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-	<meta charset="utf-8">
-	<script>
-		window.addEventListener("load", function(event) {
-			var output = document.getElementById("output");
-			var input = document.getElementById("input");
-			var ws;
-			
-			var response = function(message) {
-				var d = document.createElement("div");
-				d.textContent = message;
-				output.appendChild(d);
-			};
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
 
-			document.getElementById("create").onclick = function(event) {
-				if(ws) {
-					return false;
-				}
+    <script src="main.js"></script>
+  </head>
+  <body>
+    <div class="login" id="login">
+      <table>
+        <tr>
+          <td>Username:</td>
+          <td><input id="username" type="text" /></td>
+        </tr>
+        <tr>
+          <td>Room ID:</td>
+          <td><input id="roomid" type="text" /></td>
+          <td><button id="open">Join Room</button></td>
+          <td><button id="create">Create Room</button></td>
+        </tr>
+      </table>
+    </div>
 
-				ws = new WebSocket("ws://127.0.0.1:8080/create?username="+username.value);
-				ws.onopen = function(event) {
-					response("Connecting...");
-				}
-				ws.onclose = function(event) {
-					response("Connection closed.");
-					ws = null;
-				}
-				ws.onmessage = function(event) {
-					response(event.data);
-				}
-				return false;
-			};
+    <div class="blocker" id="blocker"></div>
 
-			document.getElementById("open").onclick = function(event) {
-				if(ws) {
-					return false;
-				}
-
-				ws = new WebSocket("ws://127.0.0.1:8080/add?roomid="+roomid.value+"&username="+username.value);
-				ws.onopen = function(event) {
-					response("Connecting...");
-				}
-				ws.onclose = function(event) {
-					response("Connection closed.");
-					ws = null;
-				}
-				ws.onmessage = function(event) {
-					response(event.data);
-				}
-				return false;
-			};
-
-			document.getElementById("send").onclick = function(event) {
-				if(!ws) {
-					return false;
-				}
-				ws.send(input.value);
-				return false;
-			};
-		});
-	</script>
-</head>
-<body>
-	<table>
-		<tr>
-			<td>Username:</td>
-			<td><input id="username" type="text"></input></td>
-		</tr>
-		<tr>
-			<td>Room ID:</td>
-			<td><input id="roomid" type="text"></input></td>
-			<td><button id="open">Join Room</button></td>
-			<td><button id="create">Create Room</button></td>
-		</tr>
-		<tr>
-			<td>Message:</td>
-			<td><input id="input" type="text"></input></td>
-			<td><button id="send">Send</button></td>
-		</tr>
-	</table>
-	<div id="output"></div>
-</body>
+    <div class="container">
+      <div class="chat-header">
+        <img src="img/goat-icon.png" />
+        <p>Goat Chat</p>
+      </div>
+      <div class="chat-box" id="output"></div>
+      <div class="message-box">
+        <input id="input" type="text" />
+        <button id="send">Send</button>
+      </div>
+    </div>
+  </body>
 </html>

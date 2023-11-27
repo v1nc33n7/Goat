@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+
+	"github.com/gorilla/websocket"
 )
 
 type HubManager struct {
@@ -17,7 +19,7 @@ type Hub struct {
 	hm         *HubManager
 	register   chan *Client
 	unregister chan *Client
-	broadcast  chan Message
+	broadcast  chan string
 	clients    map[*Client]bool
 }
 
@@ -45,7 +47,7 @@ func NewHub(hm *HubManager) *Hub {
 		hm:         hm,
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
-		broadcast:  make(chan Message),
+		broadcast:  make(chan string),
 		clients:    make(map[*Client]bool),
 	}
 }
@@ -68,7 +70,7 @@ func (h *Hub) runMessage() {
 	for {
 		message := <-h.broadcast
 		for client := range h.clients {
-			err := client.conn.WriteMessage(message.msgType, message.msg)
+			err := client.conn.WriteMessage(websocket.TextMessage, []byte(message))
 			if err != nil {
 				h.unregister <- client
 				client.conn.Close()
@@ -88,7 +90,7 @@ func (h *Hub) Run() {
 			_, ok := h.clients[client]
 			if !ok {
 				h.clients[client] = true
-				h.broadcast <- NewMessage(fmt.Sprintf("Room [%s]: Welcome %s", h.id, client.username))
+				h.broadcast <- fmt.Sprintf("Room [%s]: Welcome %s", h.id, client.username)
 
 				log.Printf("Register Client[%s] -> Hub[%s]", client.username, h.id)
 			}
@@ -97,7 +99,7 @@ func (h *Hub) Run() {
 			if ok {
 				delete(h.clients, client)
 				client.conn.Close()
-				h.broadcast <- NewMessage(fmt.Sprintf("Room [%s]: Bye %s", h.id, client.username))
+				h.broadcast <- fmt.Sprintf("Room [%s]: Bye %s", h.id, client.username)
 
 				log.Printf("Unregister Client[%s] <- Hub[%s]", client.username, h.id)
 			}

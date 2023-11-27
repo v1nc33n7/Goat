@@ -7,23 +7,10 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type Message struct {
-	username string
-	msgType  int
-	msg      []byte
-}
-
 type Client struct {
 	username string
 	hub      *Hub
 	conn     *websocket.Conn
-}
-
-func NewMessage(msg string) Message {
-	return Message{
-		msgType: websocket.TextMessage,
-		msg:     []byte(msg),
-	}
 }
 
 func (c *Client) Run() {
@@ -38,6 +25,6 @@ func (c *Client) Run() {
 			log.Println("read:", err)
 			break
 		}
-		c.hub.broadcast <- NewMessage(fmt.Sprintf("%s: %s", c.username, msg))
+		c.hub.broadcast <- fmt.Sprintf("%s: %s", c.username, msg)
 	}
 }
