@@ -18,7 +18,9 @@ window.addEventListener("load", function (event) {
       return false;
     }
 
-    ws = new WebSocket("ws://127.0.0.1:8080/create?username=" + username.value);
+    ws = new WebSocket(
+      "wss://" + window.location.host + "/create?username=" + username.value,
+    );
     ws.onopen = function (event) {
       login.style.visibility = "hidden";
       blocker.style.visibility = "hidden";
@@ -42,7 +44,9 @@ window.addEventListener("load", function (event) {
     }
 
     ws = new WebSocket(
-      "ws://127.0.0.1:8080/add?roomid=" +
+      "wss://" +
+        window.location.host +
+        "/add?roomid=" +
         roomid.value +
         "&username=" +
         username.value,

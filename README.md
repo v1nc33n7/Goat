@@ -1,4 +1,7 @@
 # 🐐 Goat - Simple real time chat
-***
-### Screenshot
+
+---
+
+### Showcase
+
 ![Showcase](/static/img/showcase.png)
