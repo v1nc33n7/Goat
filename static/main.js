@@ -19,7 +19,7 @@ window.addEventListener("load", function (event) {
     }
 
     ws = new WebSocket(
-      "wss://" + window.location.host + "/create?username=" + username.value,
+      "ws://" + window.location.host + "/create?username=" + username.value,
     );
     ws.onopen = function (event) {
       login.style.visibility = "hidden";
@@ -44,7 +44,7 @@ window.addEventListener("load", function (event) {
     }
 
     ws = new WebSocket(
-      "wss://" +
+      "ws://" +
         window.location.host +
         "/add?roomid=" +
         roomid.value +
