@@ -8,15 +8,10 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type HubManager struct {
-	register   chan *Hub
-	unregister chan *Hub
-	hubs       map[string]*Hub
-}
+var hubList map[string]*Hub
 
 type Hub struct {
 	id         string
-	hm         *HubManager
 	register   chan *Client
 	unregister chan *Client
 	broadcast  chan string
@@ -33,18 +28,9 @@ func randomId(n int) string {
 	return string(b)
 }
 
-func NewManager() *HubManager {
-	return &HubManager{
-		register:   make(chan *Hub),
-		unregister: make(chan *Hub),
-		hubs:       make(map[string]*Hub),
-	}
-}
-
-func NewHub(hm *HubManager) *Hub {
+func NewHub() *Hub {
 	return &Hub{
 		id:         randomId(8),
-		hm:         hm,
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
 		broadcast:  make(chan string),
@@ -52,21 +38,7 @@ func NewHub(hm *HubManager) *Hub {
 	}
 }
 
-func (hm *HubManager) Run() {
-	for {
-		select {
-		case hub := <-hm.register:
-			_, ok := hm.hubs[hub.id]
-			if !ok {
-				hm.hubs[hub.id] = hub
-
-				log.Printf("New Hub created: [%s]", hub.id)
-			}
-		}
-	}
-}
-
-func (h *Hub) runMessage() {
+func (h *Hub) broadcastRun() {
 	for {
 		message := <-h.broadcast
 		for client := range h.clients {
@@ -82,7 +54,7 @@ func (h *Hub) runMessage() {
 }
 
 func (h *Hub) Run() {
-	go h.runMessage()
+	go h.broadcastRun()
 
 	for {
 		select {
@@ -99,12 +71,13 @@ func (h *Hub) Run() {
 			if ok {
 				delete(h.clients, client)
 				client.conn.Close()
+
 				h.broadcast <- fmt.Sprintf("Room [%s]: Bye %s", h.id, client.username)
 
 				log.Printf("Unregister Client[%s] <- Hub[%s]", client.username, h.id)
 			}
 			if len(h.clients) == 0 {
-				delete(h.hm.hubs, h.id)
+				delete(hubList, h.id)
 
 				log.Printf("Removed Hub[%s]", h.id)
 			}

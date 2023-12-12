@@ -12,7 +12,7 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func createRoom(hubManager *HubManager, w http.ResponseWriter, r *http.Request) {
+func createRoom(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("Upgrade connection error: %v", err)
@@ -26,17 +26,21 @@ func createRoom(hubManager *HubManager, w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	hub := NewHub(hubManager)
+	hub := NewHub()
 	go hub.Run()
 
 	client := &Client{username: username, hub: hub, conn: conn}
 	hub.register <- client
 	go client.Run()
 
-	hubManager.register <- hub
+	_, ok := hubList[hub.id]
+	if !ok {
+		hubList[hub.id] = hub
+		log.Printf("New Hub created: [%s]", hub.id)
+	}
 }
 
-func addClient(hubManager *HubManager, w http.ResponseWriter, r *http.Request) {
+func addClient(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("Upgrade connection error: %v", err)
@@ -51,7 +55,7 @@ func addClient(hubManager *HubManager, w http.ResponseWriter, r *http.Request) {
 	}
 
 	hubId := r.URL.Query().Get("roomid")
-	hub, ok := hubManager.hubs[hubId]
+	hub, ok := hubList[hubId]
 	if !ok {
 		conn.WriteMessage(websocket.TextMessage, []byte("Couldn't find room with this id."))
 		conn.Close()
@@ -64,16 +68,11 @@ func addClient(hubManager *HubManager, w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	hubManager := NewManager()
-	go hubManager.Run()
+	hubList = make(map[string]*Hub)
 
 	http.Handle("/", http.FileServer(http.Dir("./static")))
-	http.HandleFunc("/create", func(w http.ResponseWriter, r *http.Request) {
-		createRoom(hubManager, w, r)
-	})
-	http.HandleFunc("/add", func(w http.ResponseWriter, r *http.Request) {
-		addClient(hubManager, w, r)
-	})
+	http.HandleFunc("/create", createRoom)
+	http.HandleFunc("/add", addClient)
 
 	log.Printf("Listen on addr: %s\n", ":8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
