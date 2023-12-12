@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"math/rand"
 
 	"github.com/gorilla/websocket"
 )
@@ -18,24 +17,19 @@ type Hub struct {
 	clients    map[*Client]bool
 }
 
-var lettersRunes = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
-
-func randomId(n int) string {
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = lettersRunes[rand.Intn(len(lettersRunes))]
-	}
-	return string(b)
-}
-
-func NewHub() *Hub {
-	return &Hub{
-		id:         randomId(8),
+func NewHub(id string) *Hub {
+	hub := &Hub{
+		id:         id,
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
 		broadcast:  make(chan string),
 		clients:    make(map[*Client]bool),
 	}
+
+	hubList[hub.id] = hub
+	log.Printf("New Hub created: [%s]", hub.id)
+
+	return hub
 }
 
 func (h *Hub) broadcastRun() {

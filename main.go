@@ -2,14 +2,32 @@ package main
 
 import (
 	"log"
+	"math/rand"
 	"net/http"
 
 	"github.com/gorilla/websocket"
 )
 
+const lenghtId = 8
+
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+}
+
+var lettersRunes = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+
+func randomId(str string) string {
+	_, ok := hubList[str]
+	if !ok && str != "" {
+		return str
+	}
+
+	b := make([]rune, lenghtId)
+	for i := range b {
+		b[i] = lettersRunes[rand.Intn(len(lettersRunes))]
+	}
+	return randomId(string(b))
 }
 
 func createRoom(w http.ResponseWriter, r *http.Request) {
@@ -26,18 +44,12 @@ func createRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hub := NewHub()
+	hub := NewHub(randomId(""))
 	go hub.Run()
 
 	client := &Client{username: username, hub: hub, conn: conn}
 	hub.register <- client
 	go client.Run()
-
-	_, ok := hubList[hub.id]
-	if !ok {
-		hubList[hub.id] = hub
-		log.Printf("New Hub created: [%s]", hub.id)
-	}
 }
 
 func addClient(w http.ResponseWriter, r *http.Request) {
