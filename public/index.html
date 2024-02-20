@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="scripts/chat.js"></script>
+</head>
+
+<body>
+    <div class="h-screen min-h-screen bg-neutral-950">
+        <div class="bg-neutral-950 border-2 border-red-800 max-w-3xl mx-auto h-full min-h-full">
+            <div id="login" class="flex flex-col items-center h-full">
+                <div class="flex h-1/6 items-center w-full justify-center">
+                    <p class="text-white text-6xl font-['Dungeon']">Goat</p>
+                </div>
+                <img class="object-contain max-w-md border-4 border-red-700" src="img/dragon.png" />
+
+                <div class="text-white">
+                    <form class="flex flex-col items-center py-6 space-y-6">
+                        <div class="flex flex-col items-center space-y-1">
+                            <label class="font-bold">Username:</label>
+                            <input class="text-black px-1 border-2 border-neutral-800" type="text" id="username" />
+                            <label class="font-bold">Room ID:</label>
+                            <input class="text-black px-1 border-2 border-neutral-800" type="text" id="roomid" />
+                        </div>
+
+                        <div class="space-x-6">
+                            <button id="create" class="border-2 border-red-900 bg-red-800 hover:bg-red-600 w-32" type="submit">
+                                Create
+                            </button>
+                            <button id="add" class="border-2 border-red-900 bg-red-800 hover:bg-red-600 w-32" type="submit">
+                                Join
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="chat" class="hidden flex-col items-center h-full">
+                <div class="flex justify-evenly h-1/6 w-full items-center border-b-2 border-red-800">
+                    <img class="object-scale-down h-full" src="img/warrior.png">
+                    <p class="text-white text-6xl font-['Dungeon']">Goat</p>
+                    <img class="object-scale-down h-full" src="img/warrior.png">
+                </div>
+
+                <div class="flex flex-col h-5/6 max-h-min max-w-full min-w-full text-white">
+                    <div id="response" class="px-2 overflow-auto h-full"></div>
+                    <div class="m-2 flex gap-2">
+                        <input type="text" id="message" class="text-black border-2 border-neutral-800 flex-1" />
+                        <button id="send" class="w-1/6 border-2 border-red-900 bg-red-800 hover:bg-red-600">Send</button>
+                        <button id="exit" class="w-10 border-2 border-red-900 bg-red-800 hover:bg-red-600">Exit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

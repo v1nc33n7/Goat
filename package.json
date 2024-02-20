@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "tail": "npx tailwindcss -i public/css/tailwind.css -o public/css/style.css --watch",
+    "build": "npx tailwindcss -i public/css/tailwind.css -o public/css/style.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}
