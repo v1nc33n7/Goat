@@ -4,4 +4,6 @@
 
 ### Showcase
 
-![Showcase](showcase.png)
+![Showcase](showcase/login.png)
+
+![Showcase](showcase/chat.png)
