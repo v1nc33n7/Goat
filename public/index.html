@@ -3,13 +3,17 @@
 
 <head>
     <meta charset="utf-8" />
+    <title>Goat</title>
+
+    <link rel="icon" type="image/x-icon" href="img/warrior.png">
 
     <link rel="stylesheet" href="css/style.css" />
-    <script src="scripts/chat.js"></script>
+    <script type="module" src="scripts/main.js"></script>
 </head>
 
 <body>
-    <div class="h-screen min-h-screen bg-neutral-950">
+    <div class="h-screen min-h-screen bg-neutral-950 w-screen min-w-screen">
+        <div id="error" class="fixed bottom-24 left-1/2 -translate-x-1/2 text-red-700 font-bold"></div>
         <div class="bg-neutral-950 border-2 border-red-800 max-w-3xl mx-auto h-full min-h-full">
             <div id="login" class="flex flex-col items-center h-full">
                 <div class="flex h-1/6 items-center w-full justify-center">
@@ -18,7 +22,7 @@
                 <img class="object-contain max-w-md border-4 border-red-700" src="img/dragon.png" />
 
                 <div class="text-white">
-                    <form class="flex flex-col items-center py-6 space-y-6">
+                    <div class="flex flex-col items-center py-6 space-y-6">
                         <div class="flex flex-col items-center space-y-1">
                             <label class="font-bold">Username:</label>
                             <input class="text-black px-1 border-2 border-neutral-800" type="text" id="username" />
@@ -27,14 +31,14 @@
                         </div>
 
                         <div class="space-x-6">
-                            <button id="create" class="border-2 border-red-900 bg-red-800 hover:bg-red-600 w-32" type="submit">
+                            <button id="create" class="border-2 border-neutral-900 bg-neutral-800 text-neutral-600 cursor-default w-32">
                                 Create
                             </button>
-                            <button id="add" class="border-2 border-red-900 bg-red-800 hover:bg-red-600 w-32" type="submit">
+                            <button id="join" class="border-2 border-neutral-900 bg-neutral-800 text-neutral-600 cursor-default w-32">
                                 Join
                             </button>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
 
